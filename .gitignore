@@ -11,3 +11,9 @@ appsettings.*.local.json
 .env
 .env.*
 !appsettings.json.template
+android-sms-gateway/.gradle/
+android-sms-gateway/**/build/
+android-sms-gateway/local.properties
+android-sms-gateway/.idea/
+*.apk
+*.aab

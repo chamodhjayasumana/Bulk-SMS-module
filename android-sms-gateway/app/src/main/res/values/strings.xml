@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SMS Gateway</string>
+    <string name="notification_channel_id">sms_gateway_channel</string>
+    <string name="notification_channel_name">SMS Gateway</string>
+    <string name="notification_title">SMS Gateway running</string>
+    <string name="notification_text">Listening for local SMS send requests</string>
+</resources>
