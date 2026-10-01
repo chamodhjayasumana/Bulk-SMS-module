@@ -1,5 +1,6 @@
 using BulkSms.Api.Auth;
 using BulkSms.Application.Interfaces;
+using BulkSms.Domain.Enums;
 using BulkSms.Domain.Models;
 using BulkSms.Domain.Options;
 using Microsoft.AspNetCore.Mvc;
@@ -13,17 +14,99 @@ namespace BulkSms.Api.Controllers;
 public class BulkSmsController : ControllerBase
 {
     private readonly IBulkSmsService _bulkSmsService;
+    private readonly IAndroidSmsGateway _androidGateway;
     private readonly SmsProviderOptions _options;
+    private readonly SmsGatewayOptions _gatewayOptions;
     private readonly ILogger<BulkSmsController> _logger;
 
     public BulkSmsController(
         IBulkSmsService bulkSmsService,
+        IAndroidSmsGateway androidGateway,
         IOptions<SmsProviderOptions> options,
+        IOptions<SmsGatewayOptions> gatewayOptions,
         ILogger<BulkSmsController> logger)
     {
         _bulkSmsService = bulkSmsService;
+        _androidGateway = androidGateway;
         _options = options.Value;
+        _gatewayOptions = gatewayOptions.Value;
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Asks the local Android gateway whether it is online. Does not send an SMS.
+    /// </summary>
+    [HttpGet("gateway/status")]
+    public async Task<ActionResult<ApiResponse<SmsGatewayStatus>>> GatewayStatus(CancellationToken cancellationToken)
+    {
+        var mode = ActiveMode();
+        try
+        {
+            var status = await _androidGateway.GetStatusAsync(cancellationToken);
+            ApplyMode(status, mode);
+            var message = status.Online
+                ? "Gateway online."
+                : status.Error ?? "Android gateway is offline.";
+            if (!string.Equals(mode, "Android", StringComparison.OrdinalIgnoreCase) && !status.Online)
+                message = $"SMS mode is {mode}. No real SMS will be sent.";
+            return Ok(ApiResponse<SmsGatewayStatus>.Ok(status, message));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Gateway status check failed");
+            var status = new SmsGatewayStatus
+            {
+                Online = false,
+                Error = "Android gateway is offline."
+            };
+            ApplyMode(status, mode);
+            return Ok(ApiResponse<SmsGatewayStatus>.Ok(status, "Android gateway is offline."));
+        }
+    }
+
+    /// <summary>
+    /// Sends one SMS through the active provider. Mock mode does not use the phone.
+    /// </summary>
+    [HttpPost("send-test")]
+    public async Task<ActionResult<ApiResponse<SmsRecipientResult>>> SendTest(
+        [FromBody] TestSmsRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (request is null || string.IsNullOrWhiteSpace(request.PhoneNumber))
+            return BadRequest(ApiResponse<SmsRecipientResult>.Fail("Phone number is required."));
+
+        if (string.IsNullOrWhiteSpace(request.Message))
+            return BadRequest(ApiResponse<SmsRecipientResult>.Fail("Message is required."));
+
+        try
+        {
+            var result = await _bulkSmsService.SendBulkAsync(new BulkSendRequest
+            {
+                Message = request.Message,
+                Recipients = new List<string> { request.PhoneNumber },
+                Confirmed = true,
+                IsTest = true
+            }, cancellationToken);
+
+            var item = result.Results.FirstOrDefault();
+            if (item is null)
+                return BadRequest(ApiResponse<SmsRecipientResult>.Fail("No valid recipients after validation."));
+
+            var message = item.Status == SmsDeliveryStatus.Sent
+                ? "Test SMS accepted."
+                : item.ErrorMessage ?? "Test SMS failed.";
+            return Ok(ApiResponse<SmsRecipientResult>.Ok(item, message));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ApiResponse<SmsRecipientResult>.Fail(ex.Message));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Test SMS failed");
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                ApiResponse<SmsRecipientResult>.Fail("Test SMS failed."));
+        }
     }
 
     /// <summary>
@@ -112,4 +195,24 @@ public class BulkSmsController : ControllerBase
     }
 
     public record EstimateRequest(string? Message, List<string>? Recipients);
+
+    public record TestSmsRequest(string? PhoneNumber, string? Message);
+
+    private string ActiveMode()
+    {
+        if (string.Equals(_gatewayOptions.Provider, "Android", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(_options.Provider, "Android", StringComparison.OrdinalIgnoreCase))
+            return "Android";
+
+        if (string.Equals(_options.Provider, "Rest", StringComparison.OrdinalIgnoreCase))
+            return "Rest";
+
+        return "Mock";
+    }
+
+    private static void ApplyMode(SmsGatewayStatus status, string mode)
+    {
+        status.Mode = mode;
+        status.SendingAllowed = !string.Equals(mode, "Android", StringComparison.OrdinalIgnoreCase) || status.Online;
+    }
 }

@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.bulksms.gateway"
-    compileSdk = 35
+    compileSdkVersion(rootProject.extra["compileSdkVersion"] as Int)
 
     defaultConfig {
         applicationId = "com.bulksms.gateway"

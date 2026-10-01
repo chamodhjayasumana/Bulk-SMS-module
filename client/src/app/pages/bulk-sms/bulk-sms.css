@@ -118,6 +118,35 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.gateway {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.gateway strong {
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+}
+
+.gateway.online strong { color: #0f6e73; }
+.gateway.mock strong { color: #8a5a00; }
+.gateway.offline strong { color: #b42318; }
+
+.test-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.4fr auto auto;
+  gap: 0.75rem;
+}
+
+.test-row input {
+  border: 1px solid #b7c7ca;
+  padding: 0.75rem;
+  font: inherit;
+  background: #fff;
+}
+
 .bar {
   height: 12px;
   background: #dce7e8;
@@ -185,5 +214,9 @@ tr.fail td:nth-child(2) {
   .top {
     flex-direction: column;
     align-items: start;
+  }
+
+  .test-row {
+    grid-template-columns: 1fr;
   }
 }

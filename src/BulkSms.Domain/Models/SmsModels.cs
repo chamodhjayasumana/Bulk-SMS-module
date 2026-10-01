@@ -33,6 +33,9 @@ public class BulkSendRequest
     public string Message { get; set; } = string.Empty;
     public List<string> Recipients { get; set; } = new();
     public bool Confirmed { get; set; }
+
+    /// <summary>Single test send. Skips the short batch duplicate guard so a test can be repeated.</summary>
+    public bool IsTest { get; set; }
 }
 
 public class BulkSendResult
@@ -47,9 +50,26 @@ public class SmsRecipientResult
 {
     public string MobileNumber { get; set; } = string.Empty;
     public SmsDeliveryStatus Status { get; set; } = SmsDeliveryStatus.Pending;
+    public string? RequestId { get; set; }
     public string? ProviderMessageId { get; set; }
     public string? ErrorMessage { get; set; }
     public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.UtcNow;
+}
+
+public class SmsGatewayStatus
+{
+    public bool Online { get; set; }
+    public bool NetworkAvailable { get; set; }
+    public string SimOperator { get; set; } = string.Empty;
+    public string? IpAddress { get; set; }
+    public int? Port { get; set; }
+    public string? Error { get; set; }
+
+    /// <summary>Mock, Rest, or Android. Comes from ASP.NET configuration, not from the phone.</summary>
+    public string Mode { get; set; } = "Mock";
+
+    /// <summary>False only when real Android sending is selected and the phone gateway is offline.</summary>
+    public bool SendingAllowed { get; set; } = true;
 }
 
 public class ProviderSendResult

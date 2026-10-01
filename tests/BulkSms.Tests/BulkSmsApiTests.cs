@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BulkSms.Domain.Enums;
 using BulkSms.Domain.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -101,6 +102,52 @@ public class BulkSmsApiTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Equal(2, payload.Data!.Total);
         Assert.Equal(1, payload.Data.Successful);
         Assert.Equal(1, payload.Data.Failed);
+    }
+
+    [Fact]
+    public async Task GatewayStatus_RequiresAuthorization()
+    {
+        var client = _factory.CreateClient();
+        var response = await client.GetAsync("/api/sms/gateway/status");
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GatewayStatus_WhenUrlMissing_ReportsOfflineWithoutSending()
+    {
+        var client = _factory.CreateClient();
+        var token = await GetTokenAsync(client);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.GetAsync("/api/sms/gateway/status");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        var payload = await response.Content.ReadFromJsonAsync<ApiResponse<SmsGatewayStatus>>(JsonOptions);
+        Assert.True(payload!.Success);
+        Assert.False(payload.Data!.Online);
+        Assert.Equal("Android gateway URL is not configured.", payload.Data.Error);
+        Assert.Equal("Mock", payload.Data.Mode);
+        Assert.True(payload.Data.SendingAllowed);
+    }
+
+    [Fact]
+    public async Task SendTest_UsesMockAndDoesNotRequireAndroid()
+    {
+        var client = _factory.CreateClient();
+        var token = await GetTokenAsync(client);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await client.PostAsJsonAsync("/api/sms/send-test", new
+        {
+            phoneNumber = "0712345671",
+            message = "SMS Gateway Test " + Guid.NewGuid()
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var payload = await response.Content.ReadFromJsonAsync<ApiResponse<SmsRecipientResult>>(JsonOptions);
+        Assert.True(payload!.Success);
+        Assert.Equal(SmsDeliveryStatus.Sent, payload.Data!.Status);
+        Assert.Equal("94712345671", payload.Data.MobileNumber);
     }
 
     [Fact]

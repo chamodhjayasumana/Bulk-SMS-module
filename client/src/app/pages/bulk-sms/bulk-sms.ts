@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import {
   BulkSendResult,
   BulkSmsService,
+  SmsGatewayStatus,
   SmsRecipientResult,
   ValidateNumbersResult
 } from '../../services/bulk-sms.service';
@@ -17,23 +18,39 @@ import {
   templateUrl: './bulk-sms.html',
   styleUrl: './bulk-sms.css'
 })
-export class BulkSmsPage {
+export class BulkSmsPage implements OnDestroy {
   message = '';
+  testPhone = '';
+  testMessage = 'SMS Gateway Test';
   selectedFile: File | null = null;
   validation = signal<ValidateNumbersResult | null>(null);
   sendResult = signal<BulkSendResult | null>(null);
+  gateway = signal<SmsGatewayStatus | null>(null);
   error = signal('');
   info = signal('');
   validating = signal(false);
   sending = signal(false);
+  testing = signal(false);
   progress = signal(0);
+  private gatewayTimer?: ReturnType<typeof setInterval>;
 
   readonly characterCount = computed(() => this.message.length);
   readonly isUnicode = computed(() => /[^\u0000-\u007F]/.test(this.message) || this.containsNonGsm(this.message));
   readonly segmentCount = computed(() => this.estimateSegments(this.message));
   readonly recipientCount = computed(() => this.validation()?.valid ?? 0);
   readonly estimatedTotal = computed(() => this.segmentCount() * this.recipientCount());
-  readonly canSend = computed(() => !!this.validation() && this.validation()!.valid > 0 && !!this.message.trim() && !this.sending());
+  readonly canSend = computed(() => !!this.validation() && this.validation()!.valid > 0 && !!this.message.trim() && !this.sending() && !this.gatewayBlocksSend());
+  readonly gatewayBlocksSend = computed(() => {
+    const status = this.gateway();
+    return !!status && status.mode === 'Android' && !status.sendingAllowed;
+  });
+  readonly gatewayLabel = computed(() => {
+    const status = this.gateway();
+    if (!status) return 'Checking…';
+    if (status.mode === 'Unknown') return 'OFFLINE';
+    if (status.mode !== 'Android') return 'MOCK';
+    return status.online ? 'ONLINE' : 'OFFLINE';
+  });
 
   readonly successful = computed(() => this.sendResult()?.successful ?? 0);
   readonly failed = computed(() => this.sendResult()?.failed ?? 0);
@@ -47,7 +64,32 @@ export class BulkSmsPage {
     private bulkSms: BulkSmsService,
     private auth: AuthService,
     private router: Router
-  ) {}
+  ) {
+    this.refreshGateway();
+    this.gatewayTimer = setInterval(() => this.refreshGateway(), 15000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.gatewayTimer) clearInterval(this.gatewayTimer);
+  }
+
+  refreshGateway(): void {
+    this.bulkSms.getGatewayStatus().subscribe({
+      next: (res) => {
+        if (res.success) this.gateway.set(res.data);
+      },
+      error: () => {
+        this.gateway.set({
+          online: false,
+          networkAvailable: false,
+          simOperator: '',
+          mode: 'Unknown',
+          sendingAllowed: true,
+          error: 'Could not reach the API.'
+        });
+      }
+    });
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -90,8 +132,8 @@ export class BulkSmsPage {
     const v = this.validation();
     if (!v || !this.message.trim()) return;
 
-    const large = v.valid >= 100;
-    if (large && !confirm(`Send SMS to ${v.valid} recipients?`)) {
+    const count = v.valid;
+    if (!confirm(`You are about to send SMS to ${count} recipient${count === 1 ? '' : 's'}.`)) {
       return;
     }
 
@@ -121,6 +163,41 @@ export class BulkSmsPage {
         this.sending.set(false);
         this.progress.set(0);
         this.error.set(err?.error?.message || 'Send failed');
+      }
+    });
+  }
+
+  sendTest(): void {
+    const phone = this.testPhone.trim();
+    const text = this.testMessage.trim();
+    if (!phone || !text) {
+      this.error.set('Enter a test phone number and message.');
+      return;
+    }
+    if (this.gatewayBlocksSend()) {
+      this.error.set(this.gateway()?.error || 'Android gateway is offline.');
+      return;
+    }
+    if (!confirm('Send one test SMS to this number?')) return;
+
+    this.error.set('');
+    this.info.set('');
+    this.testing.set(true);
+    this.bulkSms.sendTest(phone, text).subscribe({
+      next: (res) => {
+        this.testing.set(false);
+        if (!res.success || !res.data) {
+          this.error.set(res.message || 'Test SMS failed');
+          return;
+        }
+        const label = this.statusLabel(res.data.status);
+        this.info.set(label === 'Sent'
+          ? `Test accepted for ${res.data.mobileNumber}.`
+          : `Test failed for ${res.data.mobileNumber}: ${res.data.errorMessage || res.message}`);
+      },
+      error: (err) => {
+        this.testing.set(false);
+        this.error.set(err?.error?.message || 'Test SMS failed');
       }
     });
   }

@@ -8,6 +8,34 @@
   </header>
 
   <section class="panel">
+    <h2>Gateway</h2>
+    <div class="gateway" [class.online]="gatewayLabel() === 'ONLINE'" [class.mock]="gatewayLabel() === 'MOCK'" [class.offline]="gatewayLabel() === 'OFFLINE'">
+      <strong>{{ gatewayLabel() }}</strong>
+      <span>Mode: {{ gateway()?.mode || '…' }}</span>
+      <span>SIM: {{ gateway()?.simOperator || '—' }}</span>
+      <span>Android: {{ gateway()?.ipAddress || '—' }}{{ gateway()?.port ? ':' + gateway()?.port : '' }}</span>
+    </div>
+    @if (gateway()?.error && gateway()?.mode !== 'Mock') {
+      <p class="error">{{ gateway()?.error }}</p>
+    }
+    @if (gateway()?.mode === 'Mock') {
+      <p class="info">Mock mode is on. Sends stay on this PC and do not use the Dialog SIM.</p>
+    }
+    @if (gatewayBlocksSend()) {
+      <p class="error">The Android gateway is offline, so sending is turned off.</p>
+    }
+
+    <div class="test-row">
+      <input [(ngModel)]="testPhone" placeholder="Test phone, e.g. 0771234567" />
+      <input [(ngModel)]="testMessage" placeholder="Test message" />
+      <button type="button" (click)="sendTest()" [disabled]="testing() || gatewayBlocksSend()">
+        {{ testing() ? 'Sending test…' : 'Send Test SMS' }}
+      </button>
+      <button type="button" class="ghost" (click)="refreshGateway()">Refresh</button>
+    </div>
+  </section>
+
+  <section class="panel">
     <h2>Upload File</h2>
     <label class="file">
       <input type="file" accept=".csv,.xlsx" (change)="onFileSelected($event)" />

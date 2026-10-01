@@ -27,6 +27,17 @@ export interface ValidateNumbersResult {
   estimate: MessageEstimate;
 }
 
+export interface SmsGatewayStatus {
+  online: boolean;
+  networkAvailable: boolean;
+  simOperator: string;
+  ipAddress?: string | null;
+  port?: number | null;
+  error?: string | null;
+  mode: string;
+  sendingAllowed: boolean;
+}
+
 export interface SmsRecipientResult {
   mobileNumber: string;
   status: 'Pending' | 'Sent' | 'Failed' | number;
@@ -51,6 +62,17 @@ export class BulkSmsService {
     form.append('file', file);
     form.append('message', message ?? '');
     return this.http.post<ApiResponse<ValidateNumbersResult>>(`${environment.apiBaseUrl}/sms/validate`, form);
+  }
+
+  getGatewayStatus(): Observable<ApiResponse<SmsGatewayStatus>> {
+    return this.http.get<ApiResponse<SmsGatewayStatus>>(`${environment.apiBaseUrl}/sms/gateway/status`);
+  }
+
+  sendTest(phoneNumber: string, message: string): Observable<ApiResponse<SmsRecipientResult>> {
+    return this.http.post<ApiResponse<SmsRecipientResult>>(`${environment.apiBaseUrl}/sms/send-test`, {
+      phoneNumber,
+      message
+    });
   }
 
   sendBulk(message: string, recipients: string[], confirmed: boolean): Observable<ApiResponse<BulkSendResult>> {

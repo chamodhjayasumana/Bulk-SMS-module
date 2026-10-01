@@ -4,7 +4,7 @@ public class SmsProviderOptions
 {
     public const string SectionName = "SMSProvider";
 
-    /// <summary>Mock | Rest</summary>
+    /// <summary>Mock | Rest | Android. Mock never contacts the phone.</summary>
     public string Provider { get; set; } = "Mock";
 
     public string ApiUrl { get; set; } = string.Empty;
