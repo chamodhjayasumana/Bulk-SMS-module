@@ -1,0 +1,6 @@
+@BulkSms.Api_HostAddress = http://localhost:5219
+
+GET {{BulkSms.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

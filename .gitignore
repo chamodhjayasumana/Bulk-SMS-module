@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/Logs/
+**/node_modules/
+**/dist/
+**/.angular/
+**/.vs/
+*.user
+*.suo
+appsettings.*.local.json
+.env
+.env.*
+!appsettings.json.template

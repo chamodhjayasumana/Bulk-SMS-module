@@ -1,0 +1,121 @@
+<div class="page">
+  <header class="top">
+    <div>
+      <p class="brand">Bulk SMS</p>
+      <p class="tagline">Send one message to many Sri Lankan mobiles</p>
+    </div>
+    <button type="button" class="ghost" (click)="logout()">Sign out</button>
+  </header>
+
+  <section class="panel">
+    <h2>Upload File</h2>
+    <label class="file">
+      <input type="file" accept=".csv,.xlsx" (change)="onFileSelected($event)" />
+      <span>{{ selectedFile ? selectedFile.name : 'Choose CSV / XLSX' }}</span>
+    </label>
+
+    @if (validation(); as v) {
+      <div class="stats">
+        <div><span>Total</span><strong>{{ v.total }}</strong></div>
+        <div><span>Valid</span><strong>{{ v.valid }}</strong></div>
+        <div><span>Invalid</span><strong>{{ v.invalid }}</strong></div>
+        <div><span>Duplicates</span><strong>{{ v.duplicates }}</strong></div>
+      </div>
+    }
+  </section>
+
+  <section class="panel">
+    <h2>Message</h2>
+    <textarea
+      [(ngModel)]="message"
+      rows="6"
+      maxlength="1000"
+      placeholder="Your SMS message here"
+    ></textarea>
+
+    <div class="meta">
+      <span>Characters: {{ characterCount() }}</span>
+      <span>SMS segments: {{ segmentCount() }} {{ isUnicode() ? '(Unicode)' : '(GSM-7)' }}</span>
+      <span>Recipients: {{ recipientCount() }}</span>
+      <span>Estimated SMS count: {{ estimatedTotal() }}</span>
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="validate()" [disabled]="!selectedFile || validating()">
+        {{ validating() ? 'Validating…' : 'Validate' }}
+      </button>
+      <button type="button" class="primary" (click)="send()" [disabled]="!canSend()">
+        {{ sending() ? 'Sending…' : 'Send SMS' }}
+      </button>
+    </div>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+    @if (info()) {
+      <p class="info">{{ info() }}</p>
+    }
+  </section>
+
+  @if (sending() || sendResult()) {
+    <section class="panel">
+      <h2>Progress</h2>
+      <div class="bar"><div [style.width.%]="progress()"></div></div>
+      <p class="progress-label">{{ progress() }}%</p>
+      <div class="stats compact">
+        <div><span>Successful</span><strong>{{ successful() }}</strong></div>
+        <div><span>Failed</span><strong>{{ failed() }}</strong></div>
+        <div><span>Pending</span><strong>{{ pending() }}</strong></div>
+      </div>
+      @if (failed() > 0) {
+        <button type="button" class="ghost" (click)="exportFailed()">Export failed numbers</button>
+      }
+    </section>
+  }
+
+  @if (validation()?.numbers?.length) {
+    <section class="panel">
+      <h2>Recipients (valid)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mobile Number</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (n of validation()!.numbers; track n) {
+              <tr><td>{{ n }}</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+  @if (sendResult()?.results?.length) {
+    <section class="panel">
+      <h2>Results</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mobile Number</th>
+              <th>Status</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of sendResult()!.results; track r.mobileNumber) {
+              <tr [class.fail]="statusLabel(r.status) === 'Failed'" [class.ok]="statusLabel(r.status) === 'Sent'">
+                <td>{{ r.mobileNumber }}</td>
+                <td>{{ statusLabel(r.status) }}</td>
+                <td>{{ r.errorMessage || '' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</div>

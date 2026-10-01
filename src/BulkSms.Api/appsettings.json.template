@@ -1,0 +1,43 @@
+{
+  "Jwt": {
+    "Issuer": "BulkSms",
+    "Audience": "BulkSms",
+    "Secret": "ReplaceWithLongRandomSecret",
+    "ExpiryMinutes": 480
+  },
+  "AuthUsers": {
+    "Users": [
+      {
+        "UserId": "ReplaceWithActualValue",
+        "Username": "ReplaceWithActualValue",
+        "Password": "ReplaceWithActualValue",
+        "AccessType": "BulkSMS"
+      }
+    ]
+  },
+  "SMSProvider": {
+    "Provider": "Mock",
+    "ApiUrl": "ReplaceWithActualValue",
+    "ApiKey": "ReplaceWithActualValue",
+    "Username": "ReplaceWithActualValue",
+    "Password": "ReplaceWithActualValue",
+    "SenderId": "ReplaceWithActualValue",
+    "BatchSize": 50,
+    "MaxConcurrency": 5,
+    "RequestTimeoutSeconds": 30,
+    "RetryCount": 2,
+    "RetryDelayMs": 500,
+    "HttpMethod": "POST",
+    "AuthHeaderName": "Authorization",
+    "AuthScheme": "Bearer",
+    "RequestMobileField": "to",
+    "RequestMessageField": "text",
+    "RequestSenderField": "from",
+    "ResponseMessageIdField": "messageId",
+    "ResponseSuccessField": "success",
+    "ResponseErrorField": "error",
+    "MaxRecipientsPerRequest": 5000,
+    "MaxUploadBytes": 5000000,
+    "LargeBatchConfirmThreshold": 100
+  }
+}

@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Source Sans 3", "Segoe UI", sans-serif;
+  color: #163032;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(14, 116, 144, 0.14), transparent 42%),
+    radial-gradient(circle at 88% 8%, rgba(15, 118, 110, 0.12), transparent 36%),
+    linear-gradient(165deg, #f4f8f8 0%, #e8f0f1 50%, #dde8ea 100%);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
