@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using BulkSms.Domain.Enums;
 using BulkSms.Domain.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace BulkSms.Tests;
@@ -22,7 +23,7 @@ public class BulkSmsApiTests : IClassFixture<WebApplicationFactory<Program>>
 
     public BulkSmsApiTests(WebApplicationFactory<Program> factory)
     {
-        _factory = factory.WithWebHostBuilder(_ => { });
+        _factory = factory.WithWebHostBuilder(builder => builder.UseEnvironment("Testing"));
     }
 
     private async Task<string> GetTokenAsync(HttpClient client, string user = "bulksms.admin", string pass = "ChangeMe123!")

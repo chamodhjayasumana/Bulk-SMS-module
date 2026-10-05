@@ -210,6 +210,61 @@ tr.fail td:nth-child(2) {
   color: #0f6e73;
 }
 
+.ai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.ai-grid label,
+.check {
+  display: grid;
+  gap: 0.35rem;
+  color: #4b6063;
+  font-size: 0.9rem;
+}
+
+.ai-grid select,
+.ai-grid input {
+  border: 1px solid #b7c7ca;
+  padding: 0.75rem;
+  font: inherit;
+  background: #fff;
+  color: #163032;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.suggestion {
+  display: grid;
+  gap: 0.55rem;
+  border: 1px solid #d5e0e2;
+  background: #f7fbfb;
+  padding: 0.85rem;
+}
+
+.suggestion p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.warn-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: #8a5a00;
+}
+
 @media (max-width: 640px) {
   .top {
     flex-direction: column;

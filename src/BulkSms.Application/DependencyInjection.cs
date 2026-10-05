@@ -1,3 +1,4 @@
+using BulkSms.Application.Ai;
 using BulkSms.Application.Interfaces;
 using BulkSms.Application.Providers;
 using BulkSms.Application.Services;
@@ -13,13 +14,17 @@ public static class DependencyInjection
     {
         services.Configure<SmsProviderOptions>(configuration.GetSection(SmsProviderOptions.SectionName));
         services.Configure<SmsGatewayOptions>(configuration.GetSection(SmsGatewayOptions.SectionName));
+        services.Configure<AiOptions>(configuration.GetSection(AiOptions.SectionName));
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.Configure<AuthUserOptions>(configuration.GetSection(AuthUserOptions.SectionName));
 
         services.AddSingleton<IMobileNumberValidator, MobileNumberValidator>();
         services.AddSingleton<ISmsSegmentCalculator, SmsSegmentCalculator>();
+        services.AddSingleton<IContentSafetyService, ContentSafetyService>();
+        services.AddSingleton<IAiRequestGuard, AiRequestGuard>();
         services.AddScoped<IRecipientFileParser, RecipientFileParser>();
         services.AddScoped<IBulkSmsService, BulkSmsService>();
+        services.AddScoped<IAiCampaignService, AiCampaignService>();
 
         services.AddHttpClient<IAndroidSmsGateway, AndroidSmsGatewayService>((_, client) =>
             {
@@ -54,6 +59,19 @@ public static class DependencyInjection
         else
         {
             services.AddSingleton<ISmsProvider, MockSmsProvider>();
+        }
+
+        var aiProviderName = configuration.GetSection(AiOptions.SectionName)["Provider"] ?? "Mock";
+        if (string.Equals(aiProviderName, "Mock", StringComparison.OrdinalIgnoreCase))
+        {
+            services.AddSingleton<IAiProvider, MockAiProvider>();
+        }
+        else
+        {
+            services.AddHttpClient<IAiProvider, OpenAiCompatibleAiProvider>((_, client) =>
+            {
+                client.Timeout = Timeout.InfiniteTimeSpan;
+            });
         }
 
         return services;

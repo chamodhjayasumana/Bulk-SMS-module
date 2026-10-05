@@ -48,5 +48,19 @@
     "TimeoutSeconds": 30,
     "DelayBetweenMessagesMs": 1000,
     "MaxConcurrency": 1
+  },
+  "AI": {
+    "Enabled": false,
+    "Provider": "Mock",
+    "ApiUrl": "",
+    "ApiKey": "",
+    "Model": "",
+    "TimeoutSeconds": 30,
+    "MaxSuggestions": 3,
+    "MaxPromptLength": 2000,
+    "BlockSevereFindings": true,
+    "RetryCount": 1,
+    "RetryDelayMs": 200,
+    "RequestsPerMinute": 8
   }
 }

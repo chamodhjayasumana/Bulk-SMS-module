@@ -6,13 +6,14 @@ Personal Bulk SMS module for sending the same message to many Sri Lankan mobile 
 
 ```
 Angular UI
-  → ASP.NET Web API (/api/sms/*)
+  → ASP.NET Web API (/api/sms/* and /api/ai/campaign-draft)
     → IBulkSmsService
-      → ISmsProvider (MockSmsProvider | RestSmsProvider)
-        → External SMS Gateway (when Provider=Rest)
+      → ISmsProvider (Mock | Rest | Android)
+    → IAiCampaignService
+      → IAiProvider (MockAiProvider | OpenAI-compatible HTTP)
 ```
 
-Credentials (`ApiKey`, `Username`, `Password`, `SenderId`, `ApiUrl`) live **only** in ASP.NET configuration. They are never exposed to Angular.
+SMS credentials and the AI API key live **only** in ASP.NET configuration. They are never exposed to Angular. AI suggestions do not send SMS. Sending still uses the existing confirmation step.
 
 ## Solution layout
 
@@ -60,6 +61,89 @@ dotnet test
 ```
 
 Tests use `MockSmsProvider` and never send real SMS.
+
+## AI Campaign Assistant
+
+An authenticated user can describe a campaign in English, Sinhala, or Tamil. The API returns up to three SMS suggestions. Each suggestion includes a character count, segment count, and any safety warnings. The user copies a suggestion into the message box, edits it, and must still confirm before any SMS is sent. The assistant never calls the SMS provider.
+
+Supported languages: `en`, `si`, `ta`.
+
+Supported tones: `professional`, `friendly`, `urgent`, `promotional`.
+
+Placeholders such as `{name}` are allowed only when that field is listed in `personalizationFields`. Other placeholders produce a warning. The current bulk send still sends the message text as written. It does not fill placeholders per recipient.
+
+### Development with Mock
+
+`AI:Provider` defaults to `Mock`. Mock returns the same suggestions every time and does not call the network. Leave `Enabled` false and `ApiKey` empty.
+
+### External OpenAI-compatible provider
+
+Put the key only in server configuration, such as `appsettings.Development.local.json` (that file is gitignored) or an environment variable. Do not put it in Angular.
+
+```json
+"AI": {
+  "Enabled": true,
+  "Provider": "OpenAI",
+  "ApiUrl": "https://api.openai.com/v1/chat/completions",
+  "ApiKey": "YOUR_KEY",
+  "Model": "gpt-4o-mini",
+  "TimeoutSeconds": 30,
+  "MaxSuggestions": 3,
+  "MaxPromptLength": 2000
+}
+```
+
+The provider posts a chat-completions body and expects the model to return JSON: `{"suggestions":["..."]}`. Transient HTTP failures are retried. Timeouts and malformed responses return a safe error and do not include the API key.
+
+### Safety and privacy
+
+The server checks length, segment count, unknown placeholders, excessive uppercase or punctuation, suspicious links, spam-like wording, secrets, one-time passwords, and a small set of harmful phrases. Severe findings are dropped when `BlockSevereFindings` is true. Normal warnings stay visible for the reviewer. Message text, passwords, one-time codes, and API keys are not written to logs.
+
+Each signed-in user can request a limited number of drafts per minute (`RequestsPerMinute`).
+
+### Example
+
+```http
+POST /api/ai/campaign-draft
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "campaignDescription": "Promote our weekend discount",
+  "language": "si",
+  "senderName": "My Shop",
+  "maxSegments": 2,
+  "tone": "professional",
+  "includeCallToAction": true,
+  "personalizationFields": ["name"]
+}
+```
+
+```json
+{
+  "success": true,
+  "message": "Review these suggestions before sending.",
+  "data": {
+    "suggestions": [
+      {
+        "message": "My Shop: ආයුබෝවන් {name}. ...",
+        "language": "si",
+        "characterCount": 40,
+        "segments": 1,
+        "tone": "professional",
+        "warnings": [],
+        "placeholders": ["name"]
+      }
+    ],
+    "safetyWarnings": [],
+    "requiresReview": true
+  }
+}
+```
+
+`requiresReview` is always true. Copy the text into the message editor and use **Send SMS**, which still asks for confirmation.
+
+The Android app has the same assistant under **AI ASSISTANT**. The phone calls this PC over Wi-Fi at `http://<PC-address>:5219`. It signs in with the same username and password. The AI key stays on the PC. Choosing a suggestion copies it into **SEND FROM CSV**, and that screen still asks before sending. Do not type `localhost` on the phone. The HTTPS launch profile listens on all local network addresses for port 5219 so the phone can reach it.
 
 ## Configuration
 
@@ -186,6 +270,7 @@ Rejects landlines, invalid prefixes, short/long/empty values; removes duplicates
 - [ ] Limit `MaxRecipientsPerRequest` / `MaxUploadBytes`
 - [ ] Grant `BulkSMS` access only to authorized users
 - [ ] Do not log message bodies, OTPs, or passwords
+- [ ] Keep `AI:Provider=Mock` until an external model is required, and never commit `AI:ApiKey`
 - [ ] Configure provider field mapping before enabling `Rest`
 
 ## Remaining provider work

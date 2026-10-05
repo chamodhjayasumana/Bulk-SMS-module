@@ -53,6 +53,32 @@ export interface BulkSendResult {
   results: SmsRecipientResult[];
 }
 
+export interface CampaignDraftRequest {
+  campaignDescription: string;
+  language: 'en' | 'si' | 'ta' | string;
+  senderName: string;
+  maxSegments: number;
+  tone: 'professional' | 'friendly' | 'urgent' | 'promotional' | string;
+  includeCallToAction: boolean;
+  personalizationFields: string[];
+}
+
+export interface CampaignSuggestion {
+  message: string;
+  language: string;
+  characterCount: number;
+  segments: number;
+  tone: string;
+  warnings: string[];
+  placeholders: string[];
+}
+
+export interface CampaignDraft {
+  suggestions: CampaignSuggestion[];
+  safetyWarnings: string[];
+  requiresReview: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BulkSmsService {
   constructor(private http: HttpClient) {}
@@ -73,6 +99,10 @@ export class BulkSmsService {
       phoneNumber,
       message
     });
+  }
+
+  draftCampaign(request: CampaignDraftRequest): Observable<ApiResponse<CampaignDraft>> {
+    return this.http.post<ApiResponse<CampaignDraft>>(`${environment.apiBaseUrl}/ai/campaign-draft`, request);
   }
 
   sendBulk(message: string, recipients: string[], confirmed: boolean): Observable<ApiResponse<BulkSendResult>> {

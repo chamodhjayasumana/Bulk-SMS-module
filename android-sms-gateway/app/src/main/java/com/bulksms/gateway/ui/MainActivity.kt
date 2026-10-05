@@ -63,6 +63,9 @@ class MainActivity : AppCompatActivity() {
         binding.btnSendFromCsv.setOnClickListener {
             startActivity(Intent(this, BulkSendActivity::class.java))
         }
+        binding.btnAiAssistant.setOnClickListener {
+            startActivity(Intent(this, AiAssistantActivity::class.java))
+        }
 
         requestNeededPermissions()
         refreshUi()
@@ -185,7 +188,7 @@ class MainActivity : AppCompatActivity() {
     private fun rotateToken() {
         val token = app.tokenStore.rotateToken()
         binding.txtToken.text = token
-        toast("Token rotated — update ASP.NET config")
+        toast("New code created. Copy it into the computer settings.")
     }
 
     private fun refreshUi() {
@@ -199,7 +202,7 @@ class MainActivity : AppCompatActivity() {
             else -> "Disconnected"
         }
 
-        binding.txtStatus.text = if (online) "Gateway Status: ONLINE" else "Gateway Status: OFFLINE"
+        binding.txtStatus.text = if (online) "Online" else "Offline"
         binding.txtStatus.setTextColor(
             ContextCompat.getColor(
                 this,
@@ -211,9 +214,7 @@ class MainActivity : AppCompatActivity() {
         binding.txtIp.text = "Phone IP: $ip"
         binding.txtPort.text = "Port: $port"
         binding.txtCounts.text =
-            "Messages Sent: ${app.stats.messagesSent.get()}\n" +
-                "Successful: ${app.stats.successful.get()}\n" +
-                "Failed: ${app.stats.failed.get()}"
+            "Sent ${app.stats.messagesSent.get()}   ·   Success ${app.stats.successful.get()}   ·   Failed ${app.stats.failed.get()}"
         binding.txtToken.text = app.tokenStore.getToken()
 
         val recent = app.stats.recent
