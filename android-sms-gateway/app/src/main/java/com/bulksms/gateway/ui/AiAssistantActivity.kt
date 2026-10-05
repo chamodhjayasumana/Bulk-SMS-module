@@ -10,26 +10,24 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bulksms.gateway.R
 import com.bulksms.gateway.SmsGatewayApp
-import com.bulksms.gateway.ai.PcCampaignClient
+import com.bulksms.gateway.ai.LocalCampaignAssistant
 import com.bulksms.gateway.databinding.ActivityAiAssistantBinding
 import com.google.android.material.button.MaterialButton
 
 /**
- * Phone screen for the PC campaign assistant. Suggestions are reviewed here and are not sent automatically.
+ * Phone screen for campaign wording. Suggestions are written on the phone and are not sent automatically.
  */
 class AiAssistantActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAiAssistantBinding
     private val app get() = application as SmsGatewayApp
-    private val client = PcCampaignClient()
-    private val prefs by lazy { getSharedPreferences(PREFS, MODE_PRIVATE) }
+    private val assistant = LocalCampaignAssistant()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAiAssistantBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.inputBaseUrl.setText(prefs.getString(KEY_URL, "http://192.168.8.178:5219"))
         binding.spinnerLanguage.adapter = spinnerAdapter(listOf("English", "Sinhala", "Tamil"))
         binding.spinnerTone.adapter = spinnerAdapter(listOf("Professional", "Friendly", "Urgent", "Promotional"))
         binding.spinnerSegments.adapter = spinnerAdapter(listOf("1", "2", "3"))
@@ -38,24 +36,7 @@ class AiAssistantActivity : AppCompatActivity() {
     }
 
     private fun generate() {
-        val baseUrl = binding.inputBaseUrl.text?.toString().orEmpty()
-        val username = binding.inputUsername.text?.toString()?.trim().orEmpty()
-        val password = binding.inputPassword.text?.toString().orEmpty()
         val description = binding.inputDescription.text?.toString()?.trim().orEmpty()
-        if (username.isBlank() || password.isBlank()) {
-            showStatus("Enter the PC username and password.")
-            return
-        }
-        if (description.isBlank()) {
-            showStatus("Describe the campaign first.")
-            return
-        }
-
-        prefs.edit().putString(KEY_URL, baseUrl.trim()).apply()
-        binding.btnGenerate.isEnabled = false
-        binding.suggestionList.removeAllViews()
-        showStatus("Asking the PC…")
-
         val language = when (binding.spinnerLanguage.selectedItemPosition) {
             1 -> "si"
             2 -> "ta"
@@ -74,32 +55,31 @@ class AiAssistantActivity : AppCompatActivity() {
         if (binding.checkAmount.isChecked) fields.add("amount")
         val sender = binding.inputSender.text?.toString()?.trim().orEmpty()
 
-        Thread {
-            val result = try {
-                val token = client.login(baseUrl, username, password)
-                Result.success(client.draft(baseUrl, token, description, language, sender, segments, tone, binding.checkCallToAction.isChecked, fields))
-            } catch (ex: Exception) {
-                Result.failure(ex)
-            }
-            runOnUiThread {
-                binding.btnGenerate.isEnabled = true
-                result.onSuccess { draft ->
-                    showStatus("Review each suggestion before sending.")
-                    render(draft)
-                }.onFailure { ex ->
-                    showStatus(ex.message ?: "Could not reach the PC.")
-                }
-            }
-        }.start()
+        val draft = assistant.draft(
+            description,
+            language,
+            sender,
+            segments,
+            tone,
+            binding.checkCallToAction.isChecked,
+            fields
+        )
+        binding.suggestionList.removeAllViews()
+        if (draft.suggestions.isEmpty()) {
+            showStatus(draft.safetyWarnings.firstOrNull() ?: "Could not create suggestions.")
+            return
+        }
+        showStatus("Review each suggestion before sending. The computer is not needed.")
+        render(draft)
     }
 
-    private fun render(draft: PcCampaignClient.Draft) {
+    private fun render(draft: LocalCampaignAssistant.Draft) {
         val list = binding.suggestionList
         list.removeAllViews()
         draft.safetyWarnings.forEach { warning ->
             list.addView(note(warning, getColor(R.color.fail)))
         }
-        draft.suggestions.forEach { suggestion ->
+        draft.suggestions.filter { it.message.isNotBlank() }.forEach { suggestion ->
             val card = LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 setPadding(24, 24, 24, 24)
@@ -149,10 +129,5 @@ class AiAssistantActivity : AppCompatActivity() {
 
     private fun toast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    companion object {
-        private const val PREFS = "ai_assistant"
-        private const val KEY_URL = "base_url"
     }
 }

@@ -143,7 +143,7 @@ Content-Type: application/json
 
 `requiresReview` is always true. Copy the text into the message editor and use **Send SMS**, which still asks for confirmation.
 
-The Android app has the same assistant under **AI ASSISTANT**. The phone calls this PC over Wi-Fi at `http://<PC-address>:5219`. It signs in with the same username and password. The AI key stays on the PC. Choosing a suggestion copies it into **SEND FROM CSV**, and that screen still asks before sending. Do not type `localhost` on the phone. The HTTPS launch profile listens on all local network addresses for port 5219 so the phone can reach it.
+The Android app can send a CSV and write suggestions on the phone with the computer off. Those phone suggestions are written locally and do not call an external model. Choosing a suggestion copies it into **SEND FROM CSV**, and that screen still asks before sending. The computer assistant above is separate: its key stays on the PC. The phone gateway and port 5219 are only needed when the computer sends through the phone.
 
 ## Configuration
 

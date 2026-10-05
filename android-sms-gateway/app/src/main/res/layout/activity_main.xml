@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Send from this phone, or let the computer send through it."
+            android:text="Choose a file, write the message, and send from this phone. The computer can stay off."
             android:textColor="@color/muted"
             android:textSize="15sp" />
 
@@ -153,7 +153,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Describe the campaign. The computer suggests the wording. You still choose what to send."
+                android:text="Describe the campaign. This phone writes three suggestions. You still choose what to send."
                 android:textColor="@color/muted"
                 android:textSize="14sp" />
 
@@ -333,7 +333,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Keep this phone on the same Wi-Fi as the computer, on the charger, and with the screen on while messages are going out."
+            android:text="While messages are going out, keep the phone on the charger with the screen on. Wi-Fi is only needed when the computer sends through this phone."
             android:textColor="@color/muted"
             android:textSize="13sp" />
     </LinearLayout>
