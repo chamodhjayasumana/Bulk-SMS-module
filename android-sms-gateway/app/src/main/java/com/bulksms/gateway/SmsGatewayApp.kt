@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import com.bulksms.gateway.bulk.BulkSendSession
 import com.bulksms.gateway.data.GatewayStats
 import com.bulksms.gateway.security.TokenStore
 
@@ -12,6 +13,7 @@ class SmsGatewayApp : Application() {
         private set
 
     val stats = GatewayStats()
+    val bulkSession = BulkSendSession()
 
     override fun onCreate() {
         super.onCreate()
@@ -30,6 +32,14 @@ class SmsGatewayApp : Application() {
             }
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
+            val bulk = NotificationChannel(
+                getString(R.string.bulk_notification_channel_id),
+                getString(R.string.bulk_notification_channel_name),
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Shows while this phone is sending a CSV one SMS at a time"
+            }
+            manager.createNotificationChannel(bulk)
         }
     }
 }

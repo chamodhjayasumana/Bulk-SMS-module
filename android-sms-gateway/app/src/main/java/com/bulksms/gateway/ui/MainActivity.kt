@@ -60,6 +60,9 @@ class MainActivity : AppCompatActivity() {
         binding.btnTestSms.setOnClickListener { sendTestSms() }
         binding.btnCopyToken.setOnClickListener { copyToken() }
         binding.btnRotateToken.setOnClickListener { rotateToken() }
+        binding.btnSendFromCsv.setOnClickListener {
+            startActivity(Intent(this, BulkSendActivity::class.java))
+        }
 
         requestNeededPermissions()
         refreshUi()
