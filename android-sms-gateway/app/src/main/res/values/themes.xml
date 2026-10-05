@@ -6,5 +6,23 @@
         <item name="colorOnPrimary">@color/white</item>
         <item name="android:statusBarColor">@color/teal_900</item>
         <item name="android:windowBackground">@color/bg</item>
+        <item name="materialButtonStyle">@style/Widget.BulkSms.Button</item>
+        <item name="materialButtonOutlinedStyle">@style/Widget.BulkSms.Button.Outlined</item>
+    </style>
+
+    <style name="Widget.BulkSms.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:minHeight">52dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <style name="Widget.BulkSms.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:minHeight">52dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 </resources>

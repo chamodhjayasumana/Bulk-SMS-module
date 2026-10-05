@@ -52,9 +52,99 @@
     }
   </section>
 
+  <section class="panel" data-ai="panel">
+    <h2>AI Campaign Assistant</h2>
+    <p class="info">Suggestions need a person to review them. This assistant never sends SMS.</p>
+
+    <textarea
+      data-ai="description"
+      [(ngModel)]="aiDescription"
+      rows="3"
+      maxlength="2000"
+      placeholder="Example: Create a Sinhala message promoting our weekend discount."
+    ></textarea>
+
+    <div class="ai-grid">
+      <label>
+        Language
+        <select data-ai="language" [(ngModel)]="aiLanguage">
+          <option value="en">English</option>
+          <option value="si">Sinhala</option>
+          <option value="ta">Tamil</option>
+        </select>
+      </label>
+      <label>
+        Tone
+        <select data-ai="tone" [(ngModel)]="aiTone">
+          <option value="professional">Professional</option>
+          <option value="friendly">Friendly</option>
+          <option value="urgent">Urgent</option>
+          <option value="promotional">Promotional</option>
+        </select>
+      </label>
+      <label>
+        Sender name
+        <input data-ai="sender" [(ngModel)]="aiSender" maxlength="40" placeholder="My Shop" />
+      </label>
+      <label>
+        Max SMS segments
+        <select data-ai="segments" [(ngModel)]="aiMaxSegments">
+          <option [ngValue]="1">1</option>
+          <option [ngValue]="2">2</option>
+          <option [ngValue]="3">3</option>
+        </select>
+      </label>
+    </div>
+
+    <label class="check">
+      <input type="checkbox" [(ngModel)]="aiCallToAction" />
+      Include a call to action
+    </label>
+    <div class="checks">
+      <span>Allowed placeholders</span>
+      <label class="check"><input type="checkbox" [(ngModel)]="aiUseName" /> name</label>
+      <label class="check"><input type="checkbox" [(ngModel)]="aiUseOrderNumber" /> orderNumber</label>
+      <label class="check"><input type="checkbox" [(ngModel)]="aiUseAmount" /> amount</label>
+    </div>
+
+    <button type="button" data-ai="generate" (click)="generateDraft()" [disabled]="aiLoading()">
+      {{ aiLoading() ? 'Generating…' : 'Generate suggestions' }}
+    </button>
+
+    @if (aiError()) {
+      <p class="error" data-ai="error">{{ aiError() }}</p>
+    }
+    @if (aiWarnings().length) {
+      <ul class="warn-list">
+        @for (warning of aiWarnings(); track warning) {
+          <li>{{ warning }}</li>
+        }
+      </ul>
+    }
+    @for (suggestion of aiSuggestions(); track suggestion.message) {
+      <article class="suggestion" data-ai="suggestion">
+        <p>{{ suggestion.message }}</p>
+        <div class="meta">
+          <span>Characters: {{ suggestion.characterCount }}</span>
+          <span>SMS segments: {{ suggestion.segments }}</span>
+          <span>{{ suggestion.language }} · {{ suggestion.tone }}</span>
+        </div>
+        @if (suggestion.warnings.length) {
+          <ul class="warn-list" data-ai="warnings">
+            @for (warning of suggestion.warnings; track warning) {
+              <li>{{ warning }}</li>
+            }
+          </ul>
+        }
+        <button type="button" data-ai="use" (click)="useSuggestion(suggestion)">Use this message</button>
+      </article>
+    }
+  </section>
+
   <section class="panel">
     <h2>Message</h2>
     <textarea
+      data-sms="message"
       [(ngModel)]="message"
       rows="6"
       maxlength="1000"

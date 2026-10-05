@@ -2,8 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/bg">
+    android:background="@color/bg"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,44 +14,53 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="SMS GATEWAY"
+            android:letterSpacing="0.01"
+            android:text="Bulk SMS"
             android:textColor="@color/teal_900"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:letterSpacing="0.02" />
+            android:textSize="32sp"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Local Dialog SIM gateway (LAN only)"
+            android:text="Choose a file, write the message, and send from this phone. The computer can stay off."
             android:textColor="@color/muted"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:background="@color/white"
+            android:background="@drawable/card_bg"
             android:orientation="vertical"
             android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Phone status"
+                android:textColor="@color/muted"
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/txtStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Gateway Status: OFFLINE"
+                android:layout_marginTop="4dp"
+                android:text="Offline"
                 android:textColor="@color/fail"
-                android:textSize="16sp"
+                android:textSize="22sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtSim"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
                 android:text="SIM: —"
-                android:textColor="@color/teal_900" />
+                android:textColor="@color/teal_900"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/txtNetwork"
@@ -59,7 +68,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Network: —"
-                android:textColor="@color/teal_900" />
+                android:textColor="@color/teal_900"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/txtIp"
@@ -68,7 +78,8 @@
                 android:layout_marginTop="4dp"
                 android:text="Phone IP: —"
                 android:textColor="@color/teal_900"
-                android:textIsSelectable="true" />
+                android:textIsSelectable="true"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/txtPort"
@@ -76,29 +87,137 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Port: 8080"
-                android:textColor="@color/teal_900" />
+                android:textColor="@color/teal_900"
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/txtCounts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Messages Sent: 0\nSuccessful: 0\nFailed: 0"
-                android:textColor="@color/teal_900" />
+                android:text="Sent 0   ·   Success 0   ·   Failed 0"
+                android:textColor="@color/muted"
+                android:textSize="14sp" />
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="What do you want to do?"
+            android:textColor="@color/teal_900"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:background="@color/white"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/card_bg"
             android:orientation="vertical"
             android:padding="16dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Gateway Token (copy into ASP.NET config)"
+                android:text="Send from a file"
+                android:textColor="@color/teal_900"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Pick a CSV on this phone and send one number at a time. The computer can stay off."
+                android:textColor="@color/muted"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSendFromCsv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Choose a CSV" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Write a message with help"
+                android:textColor="@color/teal_900"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Describe the campaign. This phone writes three suggestions. You still choose what to send."
+                android:textColor="@color/muted"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAiAssistant"
+                style="@style/Widget.BulkSms.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Open the assistant" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="For the computer"
+            android:textColor="@color/teal_900"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/card_bg"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Turn this on only when the computer will send the messages."
+                android:textColor="@color/muted"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnStart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Start gateway" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnStop"
+                style="@style/Widget.BulkSms.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Stop gateway" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Connection code"
+                android:textColor="@color/teal_900"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Copy this into the computer settings if the page says the token is invalid."
                 android:textColor="@color/muted"
                 android:textSize="13sp" />
 
@@ -106,70 +225,57 @@
                 android:id="@+id/txtToken"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:textIsSelectable="true"
+                android:layout_marginTop="8dp"
                 android:textColor="@color/teal_900"
-                android:textSize="12sp" />
+                android:textIsSelectable="true"
+                android:textSize="13sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCopyToken"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/Widget.BulkSms.Button.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Copy Token" />
+                android:text="Copy code" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRotateToken"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Rotate Token" />
+                android:text="Make a new code"
+                android:textAllCaps="false" />
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="START GATEWAY" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnStop"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="STOP GATEWAY" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSendFromCsv"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="SEND FROM CSV" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@color/white"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/card_bg"
             android:orientation="vertical"
             android:padding="16dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Send Test SMS"
+                android:text="Send one test"
                 android:textColor="@color/teal_900"
+                android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Try a single number before a larger list."
+                android:textColor="@color/muted"
+                android:textSize="14sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:hint="Phone (e.g. 0771234567)">
+                android:hint="Phone, for example 0771234567">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputPhone"
@@ -188,7 +294,7 @@
                     android:id="@+id/inputMessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textMultiLine"
+                    android:inputType="textMultiLine|textCapSentences"
                     android:minLines="2"
                     android:text="SMS Gateway Test" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -198,15 +304,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="SEND TEST SMS" />
+                android:text="Send test" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="Recent Messages"
+            android:layout_marginTop="22dp"
+            android:text="Recent messages"
             android:textColor="@color/teal_900"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
@@ -214,19 +321,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@color/white"
-            android:padding="12dp"
+            android:background="@drawable/card_bg"
+            android:padding="16dp"
             android:text="No messages yet"
             android:textColor="@color/teal_900"
-            android:textIsSelectable="true" />
+            android:textIsSelectable="true"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/txtHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Keep phone on the same Wi-Fi as your PC. Do not expose this gateway to the internet."
+            android:text="While messages are going out, keep the phone on the charger with the screen on. Wi-Fi is only needed when the computer sends through this phone."
             android:textColor="@color/muted"
-            android:textSize="12sp" />
+            android:textSize="13sp" />
     </LinearLayout>
 </ScrollView>

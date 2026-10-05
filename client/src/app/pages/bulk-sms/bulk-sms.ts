@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import {
   BulkSendResult,
   BulkSmsService,
+  CampaignSuggestion,
   SmsGatewayStatus,
   SmsRecipientResult,
   ValidateNumbersResult
@@ -32,6 +33,19 @@ export class BulkSmsPage implements OnDestroy {
   sending = signal(false);
   testing = signal(false);
   progress = signal(0);
+  aiDescription = '';
+  aiLanguage = 'en';
+  aiTone = 'professional';
+  aiSender = '';
+  aiMaxSegments = 2;
+  aiCallToAction = true;
+  aiUseName = false;
+  aiUseOrderNumber = false;
+  aiUseAmount = false;
+  aiSuggestions = signal<CampaignSuggestion[]>([]);
+  aiWarnings = signal<string[]>([]);
+  aiError = signal('');
+  aiLoading = signal(false);
   private gatewayTimer?: ReturnType<typeof setInterval>;
 
   readonly characterCount = computed(() => this.message.length);
@@ -98,6 +112,58 @@ export class BulkSmsPage implements OnDestroy {
     this.sendResult.set(null);
     this.error.set('');
     this.info.set('');
+  }
+
+  generateDraft(): void {
+    const description = this.aiDescription.trim();
+    if (!description) {
+      this.aiError.set('Describe the campaign first.');
+      return;
+    }
+    if (description.length > 2000) {
+      this.aiError.set('Campaign description must be 2000 characters or fewer.');
+      return;
+    }
+
+    const personalizationFields = [
+      this.aiUseName ? 'name' : '',
+      this.aiUseOrderNumber ? 'orderNumber' : '',
+      this.aiUseAmount ? 'amount' : ''
+    ].filter((field) => field.length > 0);
+
+    this.aiError.set('');
+    this.aiLoading.set(true);
+    this.bulkSms.draftCampaign({
+      campaignDescription: description,
+      language: this.aiLanguage,
+      senderName: this.aiSender.trim(),
+      maxSegments: Number(this.aiMaxSegments),
+      tone: this.aiTone,
+      includeCallToAction: this.aiCallToAction,
+      personalizationFields
+    }).subscribe({
+      next: (res) => {
+        this.aiLoading.set(false);
+        if (!res.success || !res.data) {
+          this.aiError.set(res.message || 'Could not create suggestions.');
+          this.aiSuggestions.set([]);
+          return;
+        }
+        this.aiSuggestions.set(res.data.suggestions ?? []);
+        this.aiWarnings.set(res.data.safetyWarnings ?? []);
+      },
+      error: (err) => {
+        this.aiLoading.set(false);
+        this.aiSuggestions.set([]);
+        this.aiError.set(err?.error?.message || 'Could not create suggestions.');
+      }
+    });
+  }
+
+  useSuggestion(suggestion: CampaignSuggestion): void {
+    this.message = suggestion.message;
+    this.info.set('Suggestion copied into the message box. Review it, then confirm before sending.');
+    this.error.set('');
   }
 
   validate(): void {
