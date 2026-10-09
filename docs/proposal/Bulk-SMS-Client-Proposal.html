@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bulk SMS Platform — Product Overview &amp; User Guide</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #e2e8f0;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --blue: #1d4ed8;
+      --blue-deep: #1e3a8a;
+      --blue-soft: #eff6ff;
+      --green: #15803d;
+      --green-soft: #ecfdf3;
+      --amber: #b45309;
+      --amber-soft: #fff7ed;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.6;
+    }
+    img { max-width: 100%; display: block; }
+    button, input { font: inherit; }
+    a { color: var(--blue); }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 28px;
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--blue);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    nav {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 6px 10px;
+      border-radius: 999px;
+    }
+    nav a.active, nav a:hover {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+    .menu-btn {
+      display: none;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 10px;
+      padding: 8px 12px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
+      align-items: center;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 56px 28px 28px;
+    }
+    .eyebrow {
+      display: inline-block;
+      margin: 0 0 12px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: 46px;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
+    }
+    .lead {
+      margin: 0 0 22px;
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 640px;
+    }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn.primary { background: var(--blue); color: white; }
+    .btn.ghost { background: white; color: var(--ink); border: 1px solid var(--line); }
+    .hero-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .hero-card h2 { margin: 0 0 4px; font-size: 16px; }
+    .hero-card p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .chip {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 999px;
+      padding: 7px 12px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .chip.on { background: var(--blue); color: white; border-color: var(--blue); }
+    .preview {
+      background: var(--blue-soft);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .preview strong { display: block; font-size: 13px; color: var(--blue-deep); margin-bottom: 6px; }
+    .preview p { margin: 0; color: var(--ink); }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 12px 28px 64px; }
+    section.block { margin-top: 28px; }
+    .section-head { max-width: 720px; margin-bottom: 18px; }
+    h2.section {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: -0.03em;
+    }
+    .section-head p { margin: 0; color: var(--muted); }
+
+    .shot {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .shot button {
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: #eef3f9;
+      cursor: zoom-in;
+    }
+    .shot img { width: 100%; height: auto; }
+    .shot figcaption {
+      padding: 14px 16px 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .phone-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .phone-layout .shot { background: #0e1116; }
+    .phone-layout figcaption { background: white; color: var(--muted); }
+
+    .grid-3, .grid-2 { display: grid; gap: 14px; margin-top: 16px; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px 16px 14px;
+    }
+    .card h3 { margin: 0 0 6px; font-size: 16px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .stat {
+      font-size: 28px;
+      letter-spacing: -0.03em;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .stat.green { color: var(--green); }
+    .stat.amber { color: var(--amber); }
+    .stat.slate { color: #334155; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    .step-list { display: flex; flex-direction: column; gap: 8px; }
+    .step {
+      text-align: left;
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+    }
+    .step.on { border-color: #bfdbfe; background: var(--blue-soft); }
+    .step b { display: block; }
+    .step span { color: var(--muted); font-size: 13px; }
+    .step-panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      min-height: 280px;
+    }
+    .step-kicker { color: var(--blue); font-weight: 700; font-size: 13px; margin: 0 0 6px; }
+    .step-panel h3 { margin: 0 0 8px; font-size: 24px; letter-spacing: -0.03em; }
+    .step-panel p { margin: 0 0 12px; color: var(--muted); }
+    .checkline {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin: 8px 0;
+      color: var(--ink);
+    }
+    .pager { display: flex; gap: 8px; margin-top: 16px; }
+
+    .checklist { display: grid; gap: 8px; }
+    .check {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+    .check input { width: 18px; height: 18px; accent-color: var(--blue); }
+    .ready {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--amber-soft);
+      color: #7c2d12;
+    }
+    .ready.good { background: var(--green-soft); color: #14532d; }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .flow div {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .flow strong { display: block; margin-bottom: 4px; }
+    .flow span { color: var(--muted); font-size: 14px; }
+
+    details.faq {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+    }
+    details.faq summary { cursor: pointer; font-weight: 650; }
+    details.faq p { margin: 8px 0 4px; color: var(--muted); }
+
+    .note {
+      margin-top: 16px;
+      background: white;
+      border-left: 4px solid var(--blue);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .note strong { display: block; margin-bottom: 4px; }
+
+    footer {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 8px 28px 40px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.82);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 40;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: min(1100px, 100%);
+      max-height: 88vh;
+      border-radius: 12px;
+      background: white;
+    }
+    .lightbox button {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      border: 0;
+      background: white;
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      h1 { font-size: 34px; }
+      .hero, .phone-layout, .steps, .grid-3, .grid-2, .flow { grid-template-columns: 1fr; }
+      .menu-btn { display: inline-flex; }
+      nav {
+        display: none;
+        position: absolute;
+        top: 58px;
+        left: 12px;
+        right: 12px;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 8px;
+        flex-direction: column;
+      }
+      nav.open { display: flex; }
+    }
+    @media print {
+      .topbar, .hero-actions, .pager, .menu-btn, .lightbox { display: none !important; }
+      body { background: white; }
+      .shot, .card, .step-panel { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="mark">SMS</span> Bulk SMS Platform</div>
+    <button class="menu-btn" type="button" id="menuBtn">Menu</button>
+    <nav id="nav">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#gateway">Gateway</a>
+      <a href="#steps">How to send</a>
+      <a href="#results">Results</a>
+      <a href="#package">Package</a>
+      <a href="#questions">Questions</a>
+    </nav>
+  </header>
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Client proposal · Product overview &amp; user guide</p>
+      <h1>Send one clear SMS to many customers, from your own office.</h1>
+      <p class="lead">
+        Bulk SMS Platform is a private messaging system for Sri Lankan businesses.
+        Your staff upload a contact list on the office computer, check the numbers,
+        write the message, and send it through an Android phone on the same Wi-Fi.
+        You see what went through, and you can retry the numbers that did not.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#steps">Walk through the 5 steps</a>
+        <a class="btn ghost" href="#dashboard">See the screens</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h2>Try a message for your business</h2>
+      <p>Pick a type of client. The sample SMS updates so you can picture a real campaign.</p>
+      <div class="chips" id="audiences">
+        <button class="chip on" type="button" data-audience="shop">Shop</button>
+        <button class="chip" type="button" data-audience="clinic">Clinic</button>
+        <button class="chip" type="button" data-audience="school">School</button>
+        <button class="chip" type="button" data-audience="office">Office team</button>
+      </div>
+      <div class="preview">
+        <strong id="previewLabel">Shop · collection reminder</strong>
+        <p id="previewText">Hello, your order is ready for collection. Thank you for shopping with us.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="block" id="promise">
+      <div class="grid-3">
+        <article class="card">
+          <h3>Your list stays with you</h3>
+          <p>Upload CSV or Excel on the office PC. The system checks Sri Lankan mobile numbers before anything is sent.</p>
+        </article>
+        <article class="card">
+          <h3>Your SIM sends the SMS</h3>
+          <p>An Android phone on local Wi-Fi uses the SIM already in the phone. Customers receive a normal text message.</p>
+        </article>
+        <article class="card">
+          <h3>You can see the outcome</h3>
+          <p>Progress updates while the campaign runs. Failed numbers can be exported and tried again.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="block" id="dashboard">
+      <div class="section-head">
+        <h2 class="section">1. The web dashboard</h2>
+        <p>
+          This is the screen staff use on the office computer. They bring in the contact list,
+          write the SMS, and see whether the numbers are ready. Nothing is sent until a person confirms.
+        </p>
+      </div>
+      <figure class="shot">
+        <button type="button" data-zoom="images/real-dashboard.png" aria-label="Enlarge the live web dashboard">
+          <img src="images/real-dashboard.png" alt="Live Bulk SMS screen after uploading recipients.csv. Total 11, Valid 6, Invalid 4, Duplicates 1, with the SMS message ready to send." />
+        </button>
+        <figcaption>Captured from the running web application. This sample file has 11 rows: 6 valid numbers, 4 invalid, and 1 duplicate.</figcaption>
+      </figure>
+      <div class="grid-3">
+        <article class="card">
+          <span class="stat green">6</span>
+          <h3>Valid</h3>
+          <p>Numbers the system can send to, such as 071…, 9471…, or +9471…. In this sample, 6 numbers passed.</p>
+        </article>
+        <article class="card">
+          <span class="stat amber">4</span>
+          <h3>Invalid</h3>
+          <p>Rows that are too short, a landline, or not a mobile number. These are left out.</p>
+        </article>
+        <article class="card">
+          <span class="stat slate">1</span>
+          <h3>Duplicates</h3>
+          <p>The same number listed more than once. It is counted once, so people are not texted twice.</p>
+        </article>
+      </div>
+      <div class="note">
+        <strong>What staff actually do on this screen</strong>
+        Choose a CSV or Excel file, press Validate, read the counts, then write or paste the SMS.
+        The page also shows character count and how many SMS segments the message will use,
+        including Sinhala and Tamil. An optional assistant can suggest a draft in English, Sinhala, or Tamil.
+        A person still has to review it and press Send.
+      </div>
+    </section>
+
+    <section class="block" id="gateway">
+      <div class="section-head">
+        <h2 class="section">2. The Android gateway</h2>
+        <p>
+          The website prepares the campaign. The phone sends it. Keep one Android phone on the office Wi-Fi,
+          with the gateway app open and a SIM that has SMS credit. The phone talks only to the office server,
+          then the mobile network delivers each text.
+        </p>
+      </div>
+      <figure class="shot">
+        <button type="button" data-zoom="images/real-gateway.png" aria-label="Enlarge the live gateway panel">
+          <img src="images/real-gateway.png" alt="Live Gateway panel on the Bulk SMS dashboard showing MOCK mode, with Send Test SMS and Refresh." />
+        </button>
+        <figcaption>The live Gateway panel on the office screen. This capture says MOCK because the Android phone was not the sender. Sends stayed on the PC and did not use a SIM.</figcaption>
+      </figure>
+      <div class="flow">
+        <div><strong>1. Office PC</strong><span>Web app and server on your network.</span></div>
+        <div><strong>2. Office Wi-Fi</strong><span>The phone stays on the same local network.</span></div>
+        <div><strong>3. Android + SIM</strong><span>The app sends each SMS through the SIM.</span></div>
+        <div><strong>4. Customer</strong><span>A normal SMS arrives on their phone.</span></div>
+      </div>
+      <div class="grid-2">
+        <article class="card">
+          <h3>What this panel tells staff</h3>
+          <p>ONLINE means the phone is on office Wi-Fi and ready. OFFLINE turns sending off. MOCK, as in this screenshot, is the practice mode used before a phone is connected.</p>
+        </article>
+        <article class="card">
+          <h3>Send a test first</h3>
+          <p>Type a staff number, press Send Test SMS, and confirm the text arrives before a customer list. Refresh updates the phone address and SIM name.</p>
+        </article>
+      </div>
+      <div class="note">
+        <strong>When the phone is connected</strong>
+        The same panel shows ONLINE, the SIM operator, and the phone address on the local network.
+        The gateway token stays on the server and the phone. It is not shown in the browser.
+        Leave the phone plugged in, with the gateway app open, for the whole send.
+      </div>
+    </section>
+
+    <section class="block" id="steps">
+      <div class="section-head">
+        <h2 class="section">3. How a user sends a campaign</h2>
+        <p>Five short steps. Click each one, or use Next, as if you were training a new operator.</p>
+      </div>
+      <figure class="shot">
+        <button type="button" data-zoom="images/real-sign-in.png" aria-label="Enlarge the live sign-in screen">
+          <img src="images/real-sign-in.png" alt="Live Bulk SMS sign-in screen with username, password, and a Sign in button." />
+        </button>
+        <figcaption>The real sign-in screen. Only a staff account can open the campaign page.</figcaption>
+      </figure>
+      <div class="steps">
+        <div class="step-list" id="stepList">
+          <button class="step on" type="button" data-step="1"><b>1. Sign in</b><span>Open the dashboard</span></button>
+          <button class="step" type="button" data-step="2"><b>2. Upload the list</b><span>Check the numbers</span></button>
+          <button class="step" type="button" data-step="3"><b>3. Write the SMS</b><span>Review every word</span></button>
+          <button class="step" type="button" data-step="4"><b>4. Check the phone</b><span>Status must be ONLINE</span></button>
+          <button class="step" type="button" data-step="5"><b>5. Send</b><span>Confirm, then watch</span></button>
+        </div>
+        <div class="step-panel" id="stepPanel"></div>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px">
+        <div>
+          <h3 style="margin:0 0 8px">Operator checklist</h3>
+          <p style="margin:0 0 10px;color:var(--muted)">Tick these in a client meeting. The status line updates as you go.</p>
+          <div class="checklist" id="checklist">
+            <label class="check"><input type="checkbox" /> Signed in on the office computer</label>
+            <label class="check"><input type="checkbox" /> Contact file uploaded and validated</label>
+            <label class="check"><input type="checkbox" /> Valid count looks right</label>
+            <label class="check"><input type="checkbox" /> Message read by a person</label>
+            <label class="check"><input type="checkbox" /> Gateway shows ONLINE before a SIM send</label>
+            <label class="check"><input type="checkbox" /> A test SMS arrived on a staff phone</label>
+          </div>
+          <div class="ready" id="readyNote">Complete the checklist before the first live send.</div>
+        </div>
+        <article class="card">
+          <h3>A file the system understands</h3>
+          <p>Use one column of mobile numbers. Accepted headings include MobileNumber, Mobile, Phone, PhoneNumber, Telephone, and Contact.</p>
+          <pre style="background:#f8fafc;border-radius:12px;padding:12px;overflow:auto;margin:12px 0 0">MobileNumber
+0712345678
+0771234567
+0761234567</pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="block" id="results">
+      <div class="section-head">
+        <h2 class="section">4. Live campaign results</h2>
+        <p>
+          After Send, the same dashboard shows the campaign moving. Operators do not have to guess
+          whether the list is finished. They can see progress, successful and failed counts, and the numbers still waiting.
+        </p>
+      </div>
+      <div class="grid-2">
+        <figure class="shot">
+          <button type="button" data-zoom="images/real-progress.png" aria-label="Enlarge the live progress panel">
+            <img src="images/real-progress.png" alt="Live progress panel at 100 percent, with 5 successful, 1 failed, 0 pending, and Export failed numbers." />
+          </button>
+          <figcaption>Progress from the same sample send: 5 successful, 1 failed, and the export button.</figcaption>
+        </figure>
+        <figure class="shot">
+          <button type="button" data-zoom="images/real-results.png" aria-label="Enlarge the live results table">
+            <img src="images/real-results.png" alt="Live results table listing each mobile number as Sent or Failed." />
+          </button>
+          <figcaption>Each number is listed as Sent or Failed. Staff can see exactly which row needs another try.</figcaption>
+        </figure>
+      </div>
+      <div class="note">
+        <strong>How operators follow a live send</strong>
+        After Send, the bar moves and the counts update: successful, failed, and still pending.
+        When the run finishes, Export failed numbers downloads only the rows that did not go through.
+        This sample was completed in practice mode on the PC, which is why one row shows a mock failure.
+        On a real SIM send, the same two panels are used. Delivery still depends on coverage, SIM balance, and the recipient’s handset.
+      </div>
+    </section>
+
+    <section class="block" id="package">
+      <div class="section-head">
+        <h2 class="section">What a client receives</h2>
+        <p>A practical office setup, with training so the first real campaign is calm and reviewed.</p>
+      </div>
+      <div class="grid-3">
+        <article class="card"><h3>Web application</h3><p>Sign-in, file upload, number checks, message writing, confirmation, and live progress.</p></article>
+        <article class="card"><h3>Office server</h3><p>Holds the rules, the gateway connection, and the send queue. Credentials stay off the public page.</p></article>
+        <article class="card"><h3>Android gateway app</h3><p>Runs on a local phone and sends through the SIM. Start, stop, and today’s counts are on the phone.</p></article>
+        <article class="card"><h3>Setup on your network</h3><p>Install on a Windows PC, join the phone to office Wi-Fi, and complete one successful test SMS.</p></article>
+        <article class="card"><h3>Operator training</h3><p>How to validate a list, confirm a send, read progress, and export failed numbers.</p></article>
+        <article class="card"><h3>Optional writing assistant</h3><p>Draft ideas in English, Sinhala, or Tamil. It never sends a message by itself.</p></article>
+      </div>
+      <div class="grid-2">
+        <article class="card">
+          <h3>A sensible first month</h3>
+          <p>Week 1: install and send a test. Week 1–2: a pilot of 5 to 20 people. Week 2: train the operators. After that, send within the SIM package, not as an unlimited blast.</p>
+        </article>
+        <article class="card">
+          <h3>What you provide</h3>
+          <p>A Windows PC, stable office Wi-Fi, an Android phone for the gateway, an active SIM with SMS credit, and a person who approves every campaign. Message content and customer consent stay your responsibility.</p>
+        </article>
+      </div>
+      <div class="note">
+        <strong>Please read this before a large campaign</strong>
+        A normal prepaid or postpaid SIM is not unlimited. The phone must stay on and connected.
+        If the phone gets a new Wi-Fi address, the office setting may need a quick update.
+        The system does not bypass the mobile network or local advertising rules.
+        Pricing, support hours, and licence terms are confirmed in a separate commercial agreement.
+      </div>
+    </section>
+
+    <section class="block" id="questions">
+      <div class="section-head">
+        <h2 class="section">Questions clients usually ask</h2>
+        <p>Open any question. The short answer is written for a business owner, not only for IT.</p>
+      </div>
+      <details class="faq" open>
+        <summary>Do we have to put our customer list on a public website?</summary>
+        <p>No. The usual setup stays on your office network. Staff open it from the office computer. The Android phone also stays on that local Wi-Fi.</p>
+      </details>
+      <details class="faq">
+        <summary>Who is allowed to send?</summary>
+        <p>Only people with a sign-in. Sending is also blocked when the phone gateway is offline, so a campaign cannot leave while the phone is disconnected.</p>
+      </details>
+      <details class="faq">
+        <summary>Can the writing assistant send messages on its own?</summary>
+        <p>No. It can suggest wording. A person reviews the text, checks the recipient count, and presses Send.</p>
+      </details>
+      <details class="faq">
+        <summary>What if some numbers fail?</summary>
+        <p>They stay visible in the results. Export Failed Numbers gives you a file of just those contacts, ready for a correction or a second try.</p>
+      </details>
+      <details class="faq">
+        <summary>What happens next if we want this?</summary>
+        <p>A short call about your volume and languages, a live demo on a local setup, a small pilot, then installation and operator training.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    Bulk SMS Platform · Product overview and user guide for commercial discussion.
+    The screens in this proposal were captured from the running Bulk SMS web application: sign-in, upload, number check, gateway status, progress, and the results table.
+    Final pricing and support terms are confirmed separately.
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged screen">
+    <button type="button" id="closeZoom">Close</button>
+    <img id="zoomImg" alt="" />
+  </div>
+
+  <script>
+    const audiences = {
+      shop: ["Shop · collection reminder", "Hello, your order is ready for collection. Thank you for shopping with us."],
+      clinic: ["Clinic · appointment reminder", "Reminder: your appointment is tomorrow at 10:30. Please reply if you need to change the time."],
+      school: ["School · parent notice", "Dear parent, the school closes at 12:30 tomorrow for the staff meeting. Please arrange pickup."],
+      office: ["Office · staff alert", "Team update: the delivery route starts at 8:00. Please confirm you received this message."]
+    };
+
+    document.getElementById("audiences").addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      document.querySelectorAll("#audiences .chip").forEach((chip) => chip.classList.remove("on"));
+      button.classList.add("on");
+      const [label, text] = audiences[button.dataset.audience];
+      document.getElementById("previewLabel").textContent = label;
+      document.getElementById("previewText").textContent = text;
+    });
+
+    const steps = {
+      1: {
+        kicker: "Step 1 of 5",
+        title: "Sign in on the office computer",
+        body: "Open Bulk SMS in the browser and sign in with the staff account. Only signed-in people can upload a list or send. If you are showing this to a client, start here so they see that the tool is not an open page on the internet.",
+        points: ["Use the office PC on the same network as the phone.", "Sign out when the campaign desk is unattended."]
+      },
+      2: {
+        kicker: "Step 2 of 5",
+        title: "Upload the contact list",
+        body: "Choose a CSV or Excel file, then press Validate. The summary shows total, valid, invalid, and duplicate counts. In the live sample on this page that is 11 total, 6 valid, 4 invalid, and 1 duplicate.",
+        points: ["Invalid rows are skipped.", "Duplicate numbers are sent once.", "Read the valid count out loud before you continue."]
+      },
+      3: {
+        kicker: "Step 3 of 5",
+        title: "Write the message and read it again",
+        body: "Type the SMS, or ask the assistant for a draft in English, Sinhala, or Tamil, then edit it. Check the character count and the number of SMS segments. The assistant does not send anything.",
+        points: ["Keep the message short and specific.", "A person must approve the final wording.", "Confirm you are comfortable with the recipient count."]
+      },
+      4: {
+        kicker: "Step 4 of 5",
+        title: "Check the Android phone",
+        body: "Read the Gateway panel at the top of the dashboard. For a real SIM send it must say ONLINE, and it should show the SIM and the phone address. MOCK means practice mode on the PC. OFFLINE means do not send. Then send one test to a staff number.",
+        points: ["Offline keeps sending switched off.", "Leave the phone on office Wi-Fi with the gateway app open.", "Use Send Test SMS before the customer list."]
+      },
+      5: {
+        kicker: "Step 5 of 5",
+        title: "Confirm, send, and stay with the screen",
+        body: "Press Send and confirm the recipient count. Messages go out one by one. Watch the progress bar, the successful and failed totals, and the pending count. When it finishes, export any failed numbers and decide whether to retry them.",
+        points: ["Stay nearby until the bar completes.", "Export failed numbers for a second pass.", "Keep the phone awake until the queue is empty."]
+      }
+    };
+
+    const panel = document.getElementById("stepPanel");
+    let current = 1;
+
+    function renderStep(n) {
+      current = n;
+      const step = steps[n];
+      document.querySelectorAll(".step").forEach((button) => {
+        button.classList.toggle("on", Number(button.dataset.step) === n);
+      });
+      panel.innerHTML = `
+        <p class="step-kicker">${step.kicker}</p>
+        <h3>${step.title}</h3>
+        <p>${step.body}</p>
+        ${step.points.map((point) => `<div class="checkline"><span>•</span><span>${point}</span></div>`).join("")}
+        <div class="pager">
+          <button class="btn ghost" type="button" id="prevStep" ${n === 1 ? "disabled" : ""}>Back</button>
+          <button class="btn primary" type="button" id="nextStep">${n === 5 ? "Back to the top of the steps" : "Next step"}</button>
+        </div>`;
+      document.getElementById("prevStep").onclick = () => renderStep(Math.max(1, n - 1));
+      document.getElementById("nextStep").onclick = () => {
+        if (n === 5) {
+          document.getElementById("steps").scrollIntoView({ behavior: "smooth" });
+          renderStep(1);
+        } else {
+          renderStep(n + 1);
+        }
+      };
+    }
+
+    document.getElementById("stepList").addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (button) renderStep(Number(button.dataset.step));
+    });
+    renderStep(1);
+
+    const boxes = [...document.querySelectorAll("#checklist input")];
+    const ready = document.getElementById("readyNote");
+    function updateReady() {
+      const done = boxes.filter((box) => box.checked).length;
+      if (done === boxes.length) {
+        ready.className = "ready good";
+        ready.textContent = "Ready for a supervised first send. Stay with the phone until the progress bar finishes.";
+      } else {
+        ready.className = "ready";
+        ready.textContent = done + " of " + boxes.length + " checks done. Complete the list before the first live send.";
+      }
+    }
+    boxes.forEach((box) => box.addEventListener("change", updateReady));
+
+    const lightbox = document.getElementById("lightbox");
+    const zoomImg = document.getElementById("zoomImg");
+    document.querySelectorAll("[data-zoom]").forEach((button) => {
+      button.addEventListener("click", () => {
+        zoomImg.src = button.dataset.zoom;
+        zoomImg.alt = button.querySelector("img").alt;
+        lightbox.classList.add("open");
+      });
+    });
+    document.getElementById("closeZoom").onclick = () => lightbox.classList.remove("open");
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) lightbox.classList.remove("open");
+    });
+
+    const menu = document.getElementById("nav");
+    document.getElementById("menuBtn").onclick = () => menu.classList.toggle("open");
+    const links = [...menu.querySelectorAll("a")];
+    links.forEach((link) => link.addEventListener("click", () => menu.classList.remove("open")));
+    const sections = links.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
+    function spy() {
+      const mark = window.scrollY + 120;
+      let active = links[0];
+      sections.forEach((section, index) => {
+        if (section.offsetTop <= mark) active = links[index];
+      });
+      links.forEach((link) => link.classList.toggle("active", link === active));
+    }
+    document.addEventListener("scroll", spy, { passive: true });
+    spy();
+  </script>
+</body>
+</html>
